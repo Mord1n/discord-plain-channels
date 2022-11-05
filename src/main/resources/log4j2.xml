@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Properties>
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} (%thread) %5p - %m%n</Property>
+    </Properties>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+        <File name="File" fileName="error.log">
+            <PatternLayout pattern="${LOG_PATTERN}" />
+        </File>
+    </Appenders>
+    <Loggers>
+        <Logger name="logger" level="info" additivity="false">
+            <AppenderRef ref="Console" />
+        </Logger>
+        <Root level="WARN">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="File" />
+        </Root>
+    </Loggers>
+</Configuration>

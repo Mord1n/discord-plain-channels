@@ -1,5 +1,7 @@
 package discord;
 
+import discord.interfaces.ICommand;
+import discord.utils.Logger;
 import discord4j.core.object.entity.Message;
 
 import java.util.ArrayList;
@@ -18,9 +20,9 @@ public class Processor {
         for (ICommand cmd : commands) {
             if (cmd.getName().toLowerCase().equals(command[0].trim().toLowerCase())) {
                 if (cmd.execute(message)) {
-                    System.out.println("Success!");
+                    Logger.log(Logger.Level.TRACE, "Success!");
                 } else {
-                    System.out.println("Crapz!");
+                    Logger.log(Logger.Level.TRACE, "Crapz!");
                 }
             }
         }
