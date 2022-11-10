@@ -1,24 +1,19 @@
 package discord;
 
-import discord.commands.MaxSizeChannel;
-import discord.commands.Ping;
-import discord.commands.RenameChannel;
+import discord.utils.Logger;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
-
 
 public class Annotation {
     public final static String PREFIX = "=";
     public static Processor cmdProcessor;
 
     public void onReadyEvent(ReadyEvent event) {
-        System.out.println("Bot signed in with name: " + event.getSelf().getUsername());
+        Logger.log(Logger.Level.INFO, "Bot signed in with name: " + event.getSelf().getUsername());
 
         // Init simple cron to keep application alive.
         cmdProcessor = new Processor();
-        cmdProcessor.addCommand(new Ping());
-        cmdProcessor.addCommand(new RenameChannel());
-        cmdProcessor.addCommand(new MaxSizeChannel());
+//        cmdProcessor.addCommand(new Ping());
     }
 
 
