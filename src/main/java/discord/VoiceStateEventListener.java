@@ -5,10 +5,20 @@ import discord.utils.Channel;
 import discord.utils.Config;
 import discord.utils.Emoji;
 import discord.utils.Logger;
+import discord.utils.Logger.Level;
+
 import discord4j.core.event.domain.VoiceStateUpdateEvent;
+import discord4j.core.object.PermissionOverwrite;
+import discord4j.core.object.VoiceState;
+import discord4j.core.object.entity.channel.VoiceChannel;
+import discord4j.rest.util.PermissionSet;
+
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class VoiceStateEventListener implements IEventListener<VoiceStateUpdateEvent> {
@@ -32,7 +42,7 @@ public class VoiceStateEventListener implements IEventListener<VoiceStateUpdateE
             this.createChannel(event);
             // ----------- END
         } catch (Exception e) {
-            Logger.log(Logger.Level.ERROR, e.getMessage());
+            Logger.log(Level.ERROR, e.getMessage());
         }
 
         return Mono.empty();
@@ -45,18 +55,9 @@ public class VoiceStateEventListener implements IEventListener<VoiceStateUpdateE
                     .collect(Collectors.toList())
                     .doOnSuccess(members -> {
                         if (members.isEmpty()) {
-                            oldChannel.getCategory()
-                                .doOnSuccess(category -> {
-                                    if (Emoji.endsWithEmoji(category.getName(), this.config.getVoiceCategoryEmoji())) {
-                                        String name = oldChannel.getName();
-
-                                        oldChannel.delete()
-                                            .subscribeOn(Schedulers.newParallel("deleteOldChannelThread"))
-                                            .subscribe();
-
-                                        Logger.log(Logger.Level.INFO, "deleteOldChannel: '" + name + "' was deleted.");
-                                    }
-                                }).subscribe();
+                            this.deleteOldChannelWhenEmpty(oldChannel);
+                        } else {
+                            this.checkIfLeaderLeftChannel(old, oldChannel, members);
                         }
                     }).subscribe()
                 ).subscribeOn(Schedulers.newParallel("deleteOldThread")).subscribe());
@@ -79,11 +80,51 @@ public class VoiceStateEventListener implements IEventListener<VoiceStateUpdateE
                                         .subscribeOn(Schedulers.newParallel("moveMemberThread"))
                                         .subscribe();
 
-                                    Logger.log(Logger.Level.INFO, "createChannel: '" + member.getDisplayName() + "' created channel.");
+                                    Logger.log(Level.INFO, "createChannel: '" + member.getDisplayName() + "' created channel.");
                                 })
                             );
                     }
                 })
+            );
+    }
+
+    private void deleteOldChannelWhenEmpty(VoiceChannel oldChannel) {
+        oldChannel.getCategory()
+            .doOnSuccess(category -> {
+                if (Emoji.endsWithEmoji(category.getName(), this.config.getVoiceCategoryEmoji())) {
+                    String name = oldChannel.getName();
+
+                    oldChannel.delete()
+                        .subscribeOn(Schedulers.newParallel("deleteOldChannelThread"))
+                        .subscribe();
+
+                    Logger.log(Logger.Level.INFO, "deleteOldChannel: '" + name + "' was deleted.");
+                }
+            }).subscribe();
+    }
+
+    private void checkIfLeaderLeftChannel(VoiceState old, VoiceChannel oldChannel, List<VoiceState> members) {
+        old.getMember()
+            .subscribeOn(Schedulers.newParallel("checkLeaderLeaveThread"))
+            .subscribe(member -> oldChannel.getPermissionOverwrites()
+                .forEach(permission -> permission.getMemberId()
+                    .ifPresent(id -> {
+                        if (id.equals(member.getId()) && permission.getAllowed().getRawValue() == 16L) {
+                            members.get(0)
+                                .getMember()
+                                .subscribe(firstMember -> oldChannel.edit(channel -> {
+                                        Set<PermissionOverwrite> permissions = new HashSet<>();
+                                        permissions.add(PermissionOverwrite.forMember(
+                                            firstMember.getId(),
+                                            PermissionSet.of(16L), PermissionSet.none()
+                                        ));
+                                        channel.setPermissionOverwrites(permissions);
+                                        Logger.log(Level.INFO, "Updated Permissions");
+                                    }).subscribe()
+                                );
+                        }
+                    })
+                )
             );
     }
 }
