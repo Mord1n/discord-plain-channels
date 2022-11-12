@@ -36,17 +36,17 @@ public class Channel {
     }
 
     public static Mono<VoiceChannel> createChannel(Guild guild, VoiceChannel joinedChannel, GuildChannel guildChannel, Member member) {
-        Integer size = Integers.findAllIntegersInString(joinedChannel.getName());
+        Int size = new Int()
+            .findAllIntegersInString(joinedChannel.getName())
+            .withFallback(joinedChannel.getUserLimit());
         Set<PermissionOverwrite> permissions = new HashSet<>(joinedChannel.getPermissionOverwrites());
         permissions.add(PermissionOverwrite.forMember(
-            member.getId(),
-            PermissionSet.of(16L), PermissionSet.none()
-        ));
+            member.getId(), PermissionSet.of(16L), PermissionSet.none()));
 
         return guild.createVoiceChannel(a -> {
             a.setName(joinedChannel.getName());
             a.setBitrate(joinedChannel.getBitrate());
-            a.setUserLimit((size != null ? size : Integer.valueOf(joinedChannel.getUserLimit())));
+            a.setUserLimit(size.getValue());
             a.setParentId(guildChannel.getId());
             a.setPermissionOverwrites(permissions);
         });
