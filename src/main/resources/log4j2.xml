@@ -12,12 +12,9 @@
         </File>
     </Appenders>
     <Loggers>
-        <Logger name="logger" level="info" additivity="false">
+        <Root level="info">
             <AppenderRef ref="Console" />
-        </Logger>
-        <Root level="WARN">
-            <AppenderRef ref="Console" />
-            <AppenderRef ref="File" />
+            <AppenderRef ref="File" level="error" />
         </Root>
     </Loggers>
 </Configuration>
