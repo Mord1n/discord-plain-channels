@@ -2,17 +2,20 @@ import discord.Annotation;
 import discord.VoiceStateEventListener;
 import discord.utils.Config;
 import discord.utils.Logger;
+import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.event.domain.VoiceStateUpdateEvent;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import reactor.core.scheduler.Schedulers;
+
+import java.util.HashMap;
 
 public class Main {
 
     private static final Annotation annotation = new Annotation();
     private static Config config;
     private static VoiceStateEventListener voiceStateEventListener;
+    public static HashMap<Snowflake, Snowflake> ids;
 
     public static void main(String[] args) {
         config = new Config();

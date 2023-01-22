@@ -74,11 +74,13 @@ public class VoiceStateEventListener implements IEventListener<VoiceStateUpdateE
                             .getMember()
                             .subscribe(member -> Channel.create(event.getCurrent(), channel, member)
                                 .subscribeOn(Schedulers.newParallel("createNewChannelThread"))
-                                .subscribe(voiceChannel -> {
-
-                                    member.edit(a -> a.setNewVoiceChannel(voiceChannel.getId()))
+                                .subscribe(pairVoiceText -> {
+                                    pairVoiceText.getValue0().subscribe(voiceChannel ->
+                                        member.edit(a -> a.setNewVoiceChannel(voiceChannel.getId()))
                                         .subscribeOn(Schedulers.newParallel("moveMemberThread"))
-                                        .subscribe();
+                                        .subscribe());
+                                    pairVoiceText.getValue1().subscribe();
+
 
                                     Logger.log(Level.INFO, "createChannel: '" + member.getDisplayName() + "' created channel.");
                                 })
