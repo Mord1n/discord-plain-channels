@@ -42,7 +42,7 @@ public class Channel {
         Set<PermissionOverwrite> permissions = new HashSet<>(joinedChannel.getPermissionOverwrites());
         permissions.add(PermissionOverwrite.forMember(
             member.getId(), PermissionSet.of(16L), PermissionSet.none()));
-
+        //TODO: Cange to guild.createVoiceChannel(VoiceChannelCreateSpec)
         return guild.createVoiceChannel(a -> {
             a.setName(joinedChannel.getName());
             a.setBitrate(joinedChannel.getBitrate());
