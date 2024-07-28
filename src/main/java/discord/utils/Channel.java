@@ -46,7 +46,7 @@ public class Channel {
 
     public static Mono<VoiceChannel> createChannel(Guild guild, VoiceChannel joinedChannel, GuildChannel guildChannel, Member member) {
         return guild.createVoiceChannel(VoiceChannelCreateSpec.builder()
-            .name(joinedChannel.getName())
+            .name(member.getDisplayName() + " Channel")
             .bitrate(joinedChannel.getBitrate())
             .userLimit(joinedChannel.getUserLimit())
             .parentId(guildChannel.getId())

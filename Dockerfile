@@ -8,7 +8,7 @@ ENV LC_ALL en_US.UTF-8
 RUN apt update
 RUN mkdir /usr/src/app
 
-COPY target/*.jar /usr/src/app/discord_bot.jar
+COPY target/*-shaded.jar /usr/src/app/bot.jar
 
 WORKDIR /usr/src/app
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom", "-jar", "discord_bot.jar"]
+ENTRYPOINT ["java", "-jar", "bot.jar", "Main"]

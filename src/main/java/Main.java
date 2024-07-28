@@ -6,7 +6,6 @@ import discord4j.core.DiscordClient;
 import discord4j.core.event.domain.VoiceStateUpdateEvent;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import reactor.core.scheduler.Schedulers;
 
 public class Main {
 
@@ -21,7 +20,7 @@ public class Main {
     }
 
     public static void registerEvents() {
-        DiscordClient.create(config.getDiscordToken()).withGateway(client -> {
+        DiscordClient.create(config.getToken()).withGateway(client -> {
                 client.getEventDispatcher().on(ReadyEvent.class).subscribe(annotation::onReadyEvent);
 
                 client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(messageCreateEvent -> {

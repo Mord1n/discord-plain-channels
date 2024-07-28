@@ -9,21 +9,13 @@ import discord.utils.Logger.Level;
 
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.VoiceStateUpdateEvent;
-import discord4j.core.object.PermissionOverwrite;
-import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.channel.VoiceChannel;
 import discord4j.core.spec.GuildMemberEditSpec;
-import discord4j.core.spec.VoiceChannelEditSpec;
-import discord4j.rest.util.PermissionSet;
 
 import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class VoiceStateEventListener implements IEventListener<VoiceStateUpdateEvent> {
