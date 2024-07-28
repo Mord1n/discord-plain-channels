@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: '256M'
+        reservations:
+          cpus: '0.1'
+          memory: '128M'
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - token=<TOKEN>
